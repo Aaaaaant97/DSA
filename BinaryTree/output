@@ -1,0 +1,271 @@
+Test class BinarySearchTree:no more output except printing BinarySearchTree means success
+bst's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+bst1's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+bst2's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+bst3's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+bst4's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+bst's print after makeEmpty:
+Empty tree
+bst's print after insert(RightValue Version):
+0
+1
+2
+5
+Test class AvlTree:no more output except printing AvlTree means success
+At's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+At1's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+At2's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+At3's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+At4's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+At's print after makeEmpty:
+Empty tree
+At's print after insert(RightValue Version):
+0
+1
+2
+5
+Test class SplayTree:no more output except printing SplayTree means success
+St's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+St1's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+St2's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+St3's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+St4's print:
+2
+4
+6
+8
+10
+12
+14
+16
+18
+20
+St's print after makeEmpty:
+Empty tree
+Test class RedBlackTree:no more output except printing RedBlackTree means success
+rbt1's print:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+rbt2's print:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+rbt3's print:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+rbt4's print:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+rbt's print after makeEmpty:
+Empty tree

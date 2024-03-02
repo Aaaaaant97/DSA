@@ -1,0 +1,96 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{listings}
+\usepackage{xcolor} 
+\usepackage{graphicx}
+\usepackage{booktabs} %绘制表格
+\usepackage{caption2} %标题居中
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{subfigure} 
+\usepackage{longtable}
+\usepackage{abstract}
+\pagestyle{plain} %页眉消失
+\usepackage{color}
+\usepackage{cases}
+\usepackage{lmodern}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}  
+
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\lstset{
+		numbers=left, %设置行号位置
+		numberstyle=\tiny, %设置行号大小
+		keywordstyle=\color{blue}, %设置关键字颜色
+		commentstyle=\color[cmyk]{1,0,1,0}, %设置注释颜色
+		escapeinside=``, %逃逸字符(1左面的键)，用于显示中文
+		breaklines, %自动折行
+		extendedchars=false, %解决代码跨页时，章节标题，页眉等汉字不显示的问题
+		xleftmargin=1em,xrightmargin=1em, aboveskip=1em, %设置边距
+		tabsize=4, %设置tab空格数
+		showspaces=false %不显示空格
+	}
+ 
+\title{项目作业:系统架构师 }
+\author{钟琦 \\ 混合2103\quad3210103612}
+
+\begin{document}
+\maketitle
+\section{问题描述}
+给出BinarySearchTree.h,AvlTree.h,RedBlackTree.h和SplayTree.h四个头文件，根据它们各自的用途, 整理它们的逻辑关系, 重构全部代码, 并用继承关系予以表达。要求至少增加一个基础虚类:BinaryTree, 作为最顶级的基类, 用以规范全部二叉树的基本操作。
+\section{设计思路}
+\subsection{基类功能的选取}
+通过对四个头文件进行比较整理，基类BinaryTree需要包含以下二叉树基本功能：\par
+\begin{itemize}
+    \item findMin/findMax：用于寻找二叉树结构中的最小/最大值
+    \item contains：用于判断二叉树结构中是否包含值为x的节点
+    \item isEmpty：用于判断二叉树是否为空
+    \item printTree：用于打印二叉树
+    \item makeEmpty：用于清空二叉树
+    \item insert：用于插入某数
+    \item remove：用于移除某数
+\end{itemize}
+为实现这些功能，还需要二叉树最基本的结构体BinaryNode，包含节点值element，左节点BinaryNode *left和右节点BinaryNode *right。同时，为了用户使用通用性，将findMin/findMax、contains、makeEmpty、printTree这类在二叉树结构内部需要辅之以根节点root实现的函数提供公有版本接口函数和私有版本接口函数。\par
+还需要注意的是，要将基类中的private改为protected，便于派生类的访问。
+\subsection{对基类功能实现程度的考量}
+若将BinaryTree作为一个不可实例化的抽象基类，则可以使用纯虚函数的形式提供上述功能函数的接口，再在派生类中逐一加以实现。\par
+然而，观察比较BinarySearchTree和AvlTree，发现除了AvlTree会在insert和remove后加上blance(t)操作外其他实现基本无变化，因此为了防止复制粘贴代码造成冗余和提高代码犯错概率，我决定将上述基本功能都在基类BinaryTree中加以实现。为了功能的完整性，BinaryTree中添加了构造函数和析构函数，因此也要写上clone函数。
+\subsection{虚函数和多态的选取}
+上一部分主要是基于对BinarySearchTree和AvlTree两者的考量，当然，我们也要同步考虑到SplayTree和RedBlackTree的影响。在后者的两份头文件中，函数代码与前两者相比有较大的不同。一是添加了nullNode，header等特殊节点，会影响条件的判断；二是在实现思想上有所不同，例如SplayTree中的EmptyTree是通过反复寻找最大值并进行删除根节点的操作实现的。
+因此，基类中需要引入虚函数来实现多态功能。从实现思路上，\textbf{2.1}中列举的除printTree外的基本功能都需要加上virtual成为虚函数。另外，由于SplayTree和RedBlackTree中增加了nullNode导致判断条件不同，所以需要覆写isEmpty函数，而printTree中调用了isEmpty函数，为了保证isEmpty调用的为自己类内的，因此也需要覆写printTree函数。\par
+综上，Class BinaryTree中基本功能函数（构造、析构、赋值重载除外）的public版本均需要以virtual形式出现，protected版本中除findMin/findMax和contains之外也需要以virtual形式出现，而这三个函数不需要加virtual是因为BinarySearchTree和SplayTree这两个类中这三个函数与基类相同，且另外两个类的findMin/findMax和contains直接在public版本中实现，不需要调用private版本，也就不需要覆写。
+\subsection{各种Node之间的关系}
+BinarySearchTree和SplayTree中的Node均由节点值element，节点左指针*left和右指针*right组成，而AvlTree中为判断节点的平衡度增加了height这一元素，RedBlackTree增加了color这一元素。所以基类节点BinaryNode可以写成由节点值element，节点左指针*left和右指针*right组成的结构体，派生类直接继承或继承后再添加height/color。\par
+在此份头文件中，BinarySearchTree、AvlTree和SplayTree的Node确实都通过继承实现了其节点功能，而RedBlackTree中由于调用节点函数的限制，若继承基类中的Node会造成函数调用时分不清BinaryNode和RedBlackNode而产生错误，需要对RedBlackTree中的函数了加以大量修改。因此直接重写了RedBlackNode来进行清晰的调用。\par
+\subsection{补充说明}
+事实上，通过上述思考在写完基类后发现其所有基础功能都已包含了BinarySearchTree中的功能，所以BinarySearchTree中可以不用写任何函数而直接加以继承。从另一方面讲，其实也可以灵活地把BinarySearchTree直接作为基类。
+\section{测试说明}
+\subsection{测试函数正确性}
+在TestTree.cpp文件中，我参照了给出的Test文件，以BinarySearchTree为例，首先创建了BinarySearchTree bst，用以检查\textbf{2.1}中列出的基本功能，利用报错输出和printTree输出的树来检查函数是否正确。接着：\par
+\begin{itemize}
+    \item 测试复制赋值运算符:
+    \begin{flushleft}
+    BinarySearchTree<int> bst1;\par
+    bst1=bst;
+\end{flushleft}
+    \item 测试拷贝构造函数:
+    \begin{flushleft}
+    BinarySearchTree<int> bst2(bst1);
+    \end{flushleft}
+    \item 测试移动构造函数:
+    \begin{flushleft}
+    BinarySearchTree<int> bst3(move(bst2));
+    \end{flushleft}
+    \item 测试移动赋值运算符:
+    \begin{flushleft}
+    BinarySearchTree<int> bst4;
+    bst4=move(bst3);
+    \end{flushleft}
+    \end{itemize}
+其余几类派生类的测试思路与此相同，输出结构在output文件中，经检验全部正确。
+\subsection{测试各类树的效率}
+由于remove的缺失，首先不测试RedBlackTree。
+在NUMS=200000,GAP=37的条件下，BinarySearchTree、AvlTree、SplayTree实现每一类相同操作的总时间分别为9.37s、9.39s、0.12s，可见SplayTree在插入数据中有很大一部分是有序的情况下效率最佳。\par
+在NUMS=200000,GAP=3711的条件下，BinarySearchTree、AvlTree、SplayTree实现每一类相同操作的总时间分别为0.21s、0.19s、0.21s，可见BinarySearchTree、AvlTree在插入数据基本乱序的情况下效率有明显改善，因此数据的输入顺序对树的操作效率有很大的影响。\par
+然后不考虑remove操作以及赋值、构造等操作，在NUMS=200000,GAP=37的条件下，BinarySearchTree、AvlTree、SplayTree、RedBlackTree实现每一类相同操作的总时间分别为7.50s、7.20s、0.079s、0.079s；在NUMS=200000,GAP=3711的条件下，BinarySearchTree、AvlTree、SplayTree、RedBlackTree实现每一类相同操作的总时间分别为0.16s、0.15s、0.13s、0.09s说明SplayTree和RedBlackTree的期望操作效率高一些。
+\end{document}
