@@ -1,5 +1,0 @@
-#!/bin/bash
-
-#将输出结果重定向到output.txt文件中
-
-./test > output.txt
